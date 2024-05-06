@@ -79,7 +79,7 @@ class ElasticChannel(AbstractChannel):
             for the channel 
         
         """
-        if self.ell != 0:
+        if ell != 0:
             sys.exit("Only set up for s-wave neutrons right now")
 
         super().__init__(neutron,target,J,pi,ell,ac,reduced_width_aplitudes)
