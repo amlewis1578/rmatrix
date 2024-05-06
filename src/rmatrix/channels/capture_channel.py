@@ -2,7 +2,7 @@ from rmatrix.channels.abstract_channel import AbstractChannel
 import numpy as np 
 
 class CaptureChannel(AbstractChannel):
-    def __init__(self,primary,product,J,pi,ell,ac,reduced_width_aplitudes,threshold):
+    def __init__(self,primary,product,J,pi,ell,ac,reduced_width_aplitudes,excitation):
         """ Class representing an elastic channel
         
         Parameters
@@ -29,7 +29,7 @@ class CaptureChannel(AbstractChannel):
             Reduced width amplitues for the resonances in the 
             spin group
 
-        threshold : float
+        excitation : float
             the excitiation energy of the product nucleus in eV
 
 
@@ -60,7 +60,7 @@ class CaptureChannel(AbstractChannel):
             Reduced width amplitues for the resonances in the 
             spin group
 
-        threshold : float
+        excitation : float
             the excitiation energy of the product nucleus in eV
 
         Sn : float
@@ -85,7 +85,7 @@ class CaptureChannel(AbstractChannel):
             for the channel 
         
         """
-        super().__init__(primary,product,J,pi,ell,ac,reduced_width_aplitudes, threshold)
+        super().__init__(primary,product,J,pi,ell,ac,reduced_width_aplitudes, excitation)
         self.Sn = product.Sn
 
     def calc_k(self,incident_energies):
@@ -103,7 +103,7 @@ class CaptureChannel(AbstractChannel):
         """
         hbar = 6.582119e-16  # eV-s
         c = 2.99792e10  # cm/s
-        e_gamma = self.Sn + np.array(incident_energies) - self.threshold
+        e_gamma = self.Sn + np.array(incident_energies) - self.excitation
         k_cm = e_gamma / (hbar * c)
         return k_cm
 
