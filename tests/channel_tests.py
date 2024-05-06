@@ -1,3 +1,3 @@
-from rmatrix import Particle, AbstractChannel
+from rmatrix import Particle
 
 

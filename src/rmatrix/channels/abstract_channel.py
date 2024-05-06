@@ -3,7 +3,7 @@ import numpy as np
 
 class AbstractChannel(ABC):
 
-    def __init__(self,light_product,heavy_product,J,pi,ell,ac,threshold ,reduced_width_aplitudes):
+    def __init__(self,light_product,heavy_product,J,pi,ell,ac,reduced_width_aplitudes, threshold=0):
         """ Abstract class representing a single channel
         
         Parameters
@@ -27,13 +27,13 @@ class AbstractChannel(ABC):
         ac : float
             The channel radius in 10^(-12) cm
 
-        threshold  : float
-            The excitation  energy of the heavy nucleus after
-            the reaction, in eV
-
         reduced_width_aplitudes : list or numpy array
             Reduced width amplitues for the resonances in the 
             spin group
+        
+        threshold  : float, optional, default is 0
+            The excitation  energy of the heavy nucleus after
+            the reaction, in eV
 
 
         Attributes

@@ -1,4 +1,3 @@
 __version__ = "0.0.0"
 
 from rmatrix.base.particles import Particle
-from rmatrix.channels.abstract_channel import AbstractChannel
