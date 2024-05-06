@@ -1,4 +1,4 @@
-from rmatrix import Particle, ElasticChannel
+from rmatrix import Particle, ElasticChannel, CaptureChannel
 import pytest
 import numpy as np
 
@@ -26,3 +26,13 @@ def test_elastic(neutron, Ta181):
     assert obj.threshold == 0
     assert obj.ac == 0.2
     assert np.isclose(obj.calc_penetrability([1e-5])[0], 1.38191188e-06)
+
+def test_capture(gamma, Ta182):
+    a_c= 0.2        # *10^(-12) cm
+    gamma_widths = [2.51487027e-06, 2.49890268e-06]
+    obj = CaptureChannel(gamma,Ta182,3,1,0,a_c,gamma_widths,0)
+
+    assert obj.Sn == 6.8e6
+    assert obj.threshold == 0
+    assert obj.A == 182
+    assert np.isclose(obj.calc_k([1e-5])[0],3.44606245e+11)
