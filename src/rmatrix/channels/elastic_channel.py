@@ -94,7 +94,8 @@ class ElasticChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the k values
         
         """
         const = 0.002197*10**(12)    # c per sqrt(eV)
@@ -111,7 +112,8 @@ class ElasticChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the rho values
         
         """
         k_cm = self.calc_k(incident_energies)
@@ -130,7 +132,8 @@ class ElasticChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the penetrability values
         
         """
         if self.ell == 0:
@@ -158,7 +161,8 @@ class ElasticChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the cross section
         
         """
         self.cross_section = 10**24 * np.pi/k_sq * (1- 2*U_matrix[:,inc,out].real + np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out])

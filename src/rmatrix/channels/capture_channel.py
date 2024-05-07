@@ -98,7 +98,8 @@ class CaptureChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the k values
         
         """
         hbar = 6.582119e-16  # eV-s
@@ -117,7 +118,8 @@ class CaptureChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the rho values
         
         """
         k_cm = self.calc_k(incident_energies)
@@ -136,7 +138,8 @@ class CaptureChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the penetrability values
         
         """
         return (self.calc_k(incident_energies) * self.ac*10**(-12))**(2*self.ell + 1)
@@ -162,7 +165,8 @@ class CaptureChannel(AbstractChannel):
 
         Returns
         -------
-        None
+        np.array
+            the cross section values
         
         """
         self.cross_section = 10**24 * np.pi/k_sq * np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out] 
