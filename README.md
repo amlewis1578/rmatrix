@@ -10,7 +10,23 @@ move into the `rmatrix` directory and run
 pip install .
 ```
 
-to install the package
+to install the package.
+
+To install in editable mode, run
+
+```bash
+pip install -e .
+```
+
+### run the tests
+
+inside the `rmatrix` directory, run
+
+```bash
+pytest
+```
+
+to run all of the tests in the `tests` directory
 
 ## using the rmatrix package
 
