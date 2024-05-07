@@ -59,6 +59,9 @@ class SpinGroup:
 
         U_matrix : numpy array
             The U matrix
+
+        total_cross_section : numpy array
+            The total cross section for the spin group
             
         Methods
         -------
@@ -73,7 +76,7 @@ class SpinGroup:
 
         calc_cross_section
             Function to set up the U matrix and calculate the cross
-            sections for the channels
+            sections for the channels and for the spin group
         
         
         """
@@ -163,7 +166,7 @@ class SpinGroup:
 
     def calc_cross_section(self, debug=False):
         """ Function to set up the U matrix and calculate the 
-        cross sections for the channels
+        cross sections for the channels and for the spin group
         
         Parameters
         ----------
@@ -186,9 +189,13 @@ class SpinGroup:
             Omega_matrix[:,i,i] = np.exp(-1j*channel.calc_rho(self.energy_grid))
         self.U_matrix = Omega_matrix@W_matrix@Omega_matrix
 
+        # k-sq for in the incident channel
         k_sq = (self.channels[0].calc_k(self.energy_grid))**2
+
+        # get total cross section for the spin group
         self.total_cross_section = 10**24 * 2 * np.pi / k_sq * (1 - self.U_matrix[:,0,0].real)
 
+        # calculate the cross section for each channel
         for i, channel in enumerate(self.channels):
             channel.calc_cross_section(self.U_matrix,k_sq, 0, i )
         
