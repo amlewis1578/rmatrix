@@ -30,6 +30,8 @@ to run all of the tests in the `tests` directory
 
 ## using the rmatrix package
 
+This example is given in the docs directory, in the [example.ipynb](docs/example.ipynb) file.
+
 The particles need to be defined first:
 
 ```python
@@ -80,3 +82,38 @@ excitation = 5e5  # the product is left in the 1st ex state at 0.5MeV
 
 capture_first = CaptureChannel(gamma,compound,J,pi,ell,radius,reduced_width_aplitudes, excitation)
 ```
+
+Currently, the main object is the `SpinGroup` object, which holds all of the channels for a single spin group.
+
+It requires resonance energies, a neutron grid, and the channels
+
+```python
+res_energies = [1e6,1.1e6]
+energy_grid = np.linspace(0.9e6,1.2e6,1001)
+
+sg = SpinGroup(res_energies, elastic, [capture_ground, capture_first],energy_grid)
+```
+
+The spin group object will calculate the total cross section and the cross sections for each channel upon initialization.
+
+```python
+plt.plot(sg.energy_grid, sg.total_cross_section)
+plt.ylabel("Total Cross Section [b]")
+plt.xlabel("Incident Neutron Energy [eV]")
+```
+
+![alt text](docs/three_channel_total_example.png)
+
+The channel cross sections can be accessed through the `channels` attribute:
+
+```python
+for channel in sg.channels:
+    plt.plot(sg.energy_grid, channel.cross_section, label=channel)
+
+plt.legend()
+plt.ylabel("Cross Section [b]")
+plt.xlabel("Incident Neutron Energy [eV]")
+plt.yscale("log")
+```
+
+![alt text](docs/three_channel_example.png)
