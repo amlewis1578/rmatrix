@@ -4,4 +4,5 @@ def test_base():
     from rmatrix import Particle
 
 def test_channel():
-    from rmatrix import AbstractChannel
+    from rmatrix import ElasticChannel
+    from rmatrix import CaptureChannel

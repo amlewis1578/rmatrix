@@ -1,19 +1,17 @@
-from abc import ABC, abstractmethod
-import numpy as np
+from rmatrix.channels.abstract_channel import AbstractChannel
+import numpy as np 
 
-class AbstractChannel(ABC):
-
-    def __init__(self,light_product,heavy_product,J,pi,ell,ac,reduced_width_aplitudes, excitation=0):
-        """ Abstract class representing a single channel
+class CaptureChannel(AbstractChannel):
+    def __init__(self,primary,product,J,pi,ell,ac,reduced_width_aplitudes,excitation):
+        """ Class representing an elastic channel
         
         Parameters
         ----------
-        light_product : Particle object
-            The light product: the neutron for elastic, 
-            or the gamma for capture
+        primary : Particle object
+            The primary gamma
 
-        heavy_product : Particle object
-            The heavy product in the channel
+        product : Particle object
+            The product nucleus
 
         J : float
             The spin of the channel
@@ -30,23 +28,21 @@ class AbstractChannel(ABC):
         reduced_width_aplitudes : list or numpy array
             Reduced width amplitues for the resonances in the 
             spin group
-        
-        excitation  : float, optional, default is 0
-            The excitation  energy of the heavy nucleus after
-            the reaction, in eV
+
+        excitation : float
+            the excitiation energy of the product nucleus in eV
 
 
         Attributes
         ----------
-        light_product : Particle object
-            The light product: the neutron for elastic, 
-            or the gamma for capture
+        primary : Particle object
+            The primary gamma
 
-        heavy_product : Particle object
-            The heavy product in the channel
+        product : Particle object
+            The product nucleus
 
         A : int
-            Mass number of the compound nucleus
+            Mass number of the product nucleus
 
         J : float
             The spin of the channel
@@ -60,14 +56,15 @@ class AbstractChannel(ABC):
         ac : float
             The channel radius in 10^(-12) cm
 
-        excitation  : float
-            The excitation energy of the heavy nucleus after
-            the reaction, in eV
-
         reduced_width_aplitudes : numpy array
             Reduced width amplitues for the resonances in the 
             spin group
 
+        excitation : float
+            the excitiation energy of the product nucleus in eV
+
+        Sn : float
+            the neutron separation energy of the product nucleus
 
         Methods
         -------
@@ -88,18 +85,9 @@ class AbstractChannel(ABC):
             for the channel 
         
         """
+        super().__init__(primary,product,J,pi,ell,ac,reduced_width_aplitudes, excitation)
+        self.Sn = product.Sn
 
-        self.light_product = light_product
-        self.heavy_product = heavy_product
-        self.A = light_product.A + heavy_product.A
-        self.J = J
-        self.pi = pi
-        self.ell = ell
-        self.ac = ac
-        self.excitation = excitation 
-        self.reduced_width_aplitudes = np.array(reduced_width_aplitudes)
-
-    @abstractmethod
     def calc_k(self,incident_energies):
         """ Function to calculate k for the channel 
         
@@ -110,12 +98,16 @@ class AbstractChannel(ABC):
 
         Returns
         -------
-        None
+        np.array
+            the k values
         
         """
-        return None
-    
-    @abstractmethod
+        hbar = 6.582119e-16  # eV-s
+        c = 2.99792e10  # cm/s
+        e_gamma = self.Sn + np.array(incident_energies) - self.excitation
+        k_cm = e_gamma / (hbar * c)
+        return k_cm
+
     def calc_rho(self,incident_energies):
         """ Function to calculate rho for the channel 
         
@@ -126,12 +118,14 @@ class AbstractChannel(ABC):
 
         Returns
         -------
-        None
+        np.array
+            the rho values
         
         """
-        return None
-    
-    @abstractmethod
+        k_cm = self.calc_k(incident_energies)
+        ac_cm = self.ac*10**(-12)
+        return k_cm*ac_cm
+        
     def calc_penetrability(self,incident_energies):
         """ Function to calculate the penetrability 
         for the channel 
@@ -144,13 +138,13 @@ class AbstractChannel(ABC):
 
         Returns
         -------
-        None
+        np.array
+            the penetrability values
         
         """
-        return None
-    
-    @abstractmethod
-    def calc_cross_section(self,U_matrix, k_sq, inc, out):
+        return (self.calc_k(incident_energies) * self.ac*10**(-12))**(2*self.ell + 1)
+
+    def calc_cross_section(self,U_matrix,k_sq, inc, out):
         """ Function to calculate the cross section
         for the channel 
         
@@ -171,14 +165,13 @@ class AbstractChannel(ABC):
 
         Returns
         -------
-        None
+        np.array
+            the cross section values
         
         """
-        return None
+        self.cross_section = 10**24 * np.pi/k_sq * np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out] 
         
-
-    def __repr__(self):
-        return f'{self.light_product} + {self.heavy_product}({self.excitation/1e6} MeV)'
-    
-    def __str__(self):
-        return f'{self.light_product} + {self.heavy_product}({self.excitation/1e6} MeV)'
+        # check that the imaginay component is basically zero before dropping it
+        max_ind = np.argmax(self.cross_section.imag)
+        assert self.cross_section[max_ind].imag / self.cross_section[max_ind].real < 1e-10
+        self.cross_section = self.cross_section.real

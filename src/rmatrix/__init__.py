@@ -1,4 +1,5 @@
-__version__ = "0.0.0"
+__version__ = "0.2.0"
 
 from rmatrix.base.particles import Particle
-from rmatrix.channels.abstract_channel import AbstractChannel
+from rmatrix.channels.elastic_channel import ElasticChannel
+from rmatrix.channels.capture_channel import CaptureChannel
