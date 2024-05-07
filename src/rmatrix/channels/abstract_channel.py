@@ -178,7 +178,7 @@ class AbstractChannel(ABC):
         
 
     def __repr__(self):
-        return f'{self.p1} + {self.p2}({self.excitation/1e6} MeV)'
+        return f'{self.light_product} + {self.heavy_product}({self.excitation/1e6} MeV)'
     
     def __str__(self):
-        return f'{self.p1} + {self.p2}({self.excitation/1e6} MeV)'
+        return f'{self.light_product} + {self.heavy_product}({self.excitation/1e6} MeV)'

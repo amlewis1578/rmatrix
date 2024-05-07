@@ -26,6 +26,7 @@ def test_elastic(neutron, Ta181):
     assert obj.excitation == 0
     assert obj.ac == 0.2
     assert np.isclose(obj.calc_penetrability([1e-5])[0], 1.38191188e-06)
+    assert str(obj) == 'n + 181Ta(0.0 MeV)'
 
 def test_capture(gamma, Ta182):
     a_c= 0.2        # *10^(-12) cm
@@ -36,3 +37,4 @@ def test_capture(gamma, Ta182):
     assert obj.excitation == 0
     assert obj.A == 182
     assert np.isclose(obj.calc_k([1e-5])[0],3.44606245e+11)
+    assert str(obj) == 'g + 182Ta(0.0 MeV)'
