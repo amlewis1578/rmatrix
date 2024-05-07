@@ -89,8 +89,8 @@ class AbstractChannel(ABC):
         
         """
 
-        self.light_product = light_product
-        self.heavy_product = heavy_product
+        self._light_product = light_product
+        self._heavy_product = heavy_product
         self.A = light_product.A + heavy_product.A
         self.J = J
         self.pi = pi
@@ -178,7 +178,7 @@ class AbstractChannel(ABC):
         
 
     def __repr__(self):
-        return f'{self.light_product} + {self.heavy_product}({self.excitation/1e6} MeV)'
+        return f'{self._light_product} + {self._heavy_product}({self.excitation/1e6} MeV)'
     
     def __str__(self):
-        return f'{self.light_product} + {self.heavy_product}({self.excitation/1e6} MeV)'
+        return f'{self._light_product} + {self._heavy_product}({self.excitation/1e6} MeV)'

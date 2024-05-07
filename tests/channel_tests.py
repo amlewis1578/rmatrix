@@ -38,3 +38,9 @@ def test_capture(gamma, Ta182):
     assert obj.A == 182
     assert np.isclose(obj.calc_k([1e-5])[0],3.44606245e+11)
     assert str(obj) == 'g + 182Ta(0.0 MeV)'
+
+def test_exceptions(neutron, Ta181):
+    a_c= 0.2        # *10^(-12) cm
+    neutron_widths = [106.78913185, 108.99600881]
+    with pytest.raises(SystemExit):
+        ElasticChannel(neutron,Ta181,1,1,1,a_c,neutron_widths)
