@@ -77,6 +77,10 @@ class SpinGroup:
         calc_cross_section
             Function to set up the U matrix and calculate the cross
             sections for the channels and for the spin group
+
+        update_gamma_matrix(self,new_gamma_matrix):
+            Function to take a new gamma matrix in and update all of 
+            the matrices after it, and recalculate the cross section
         
         
         """
@@ -199,3 +203,33 @@ class SpinGroup:
         for i, channel in enumerate(self.channels):
             channel.calc_cross_section(self.U_matrix,k_sq, 0, i )
         
+
+    def update_gamma_matrix(self,new_gamma_matrix):
+        """ Function to take a new gamma matrix in and update all of the
+            matrices after it, and recalculate the cross section
+            
+            Parameters
+            ----------
+            new_gamma_matrix : np.array
+                The gamma matrix to replace with. It must be the same shape
+                as the original gamma matrix
+
+            Returns
+            -------
+            None
+            
+            """
+        
+        # check that the gamma matrix is the right shape
+        if not np.array_equal(self.gamma_matrix.shape, new_gamma_matrix.shape):
+            print(f"Shape of new matrix: {new_gamma_matrix.shape}")
+            print("The new gamma matrix needs to be the same shape as the old")
+            print(f"gamma matrix: {self.gamma_matrix.shape}. No recalculation will be done.")
+
+            return None
+        
+        # set the new gamma matrix and then call the rest of the functions
+        self.gamma_matrix = new_gamma_matrix
+        self.set_up_L_matrix()
+        self.set_up_A_matrix()
+        self.calc_cross_section()

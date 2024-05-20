@@ -1,6 +1,7 @@
 from rmatrix import Particle, ElasticChannel, CaptureChannel, SpinGroup
 import pytest
 import numpy as np
+from copy import deepcopy
 
 
 @pytest.fixture
@@ -71,3 +72,26 @@ def test_two_capture_channels(res_energies, energy_grid, elastic, capture_first,
     assert np.allclose(obj.A_matrix[0,:,:],exp_A)
 
     assert np.isclose(obj.channels[0].cross_section[0], 0.33041047)
+
+def test_update_gamma_matrix(res_energies, energy_grid, elastic,  capture_ground):
+
+    obj1 = SpinGroup(res_energies, elastic, [capture_ground],energy_grid)
+    print(obj1.gamma_matrix)
+
+
+    # start with object 2, which has different amplitudes
+    capture_test = deepcopy(capture_ground)
+    capture_test.reduced_width_aplitudes *=3
+    obj2 = SpinGroup(res_energies, elastic, [capture_test],energy_grid)
+    print(obj2.gamma_matrix)
+
+    # check that the cross sections are not the same
+    assert not np.array_equal(obj1.channels[1].cross_section,obj2.channels[1].cross_section)
+
+    # now update the obj2 with the gamma matrix from obj1, and check that the
+    # cross sections have been updated and match
+    obj2.update_gamma_matrix(obj1.gamma_matrix)
+
+    assert np.array_equal(obj1.channels[1].cross_section,obj2.channels[1].cross_section)
+
+
