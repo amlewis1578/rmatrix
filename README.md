@@ -117,3 +117,16 @@ plt.yscale("log")
 ```
 
 ![alt text](docs/three_channel_example.png)
+
+
+## modify the gamma matrix
+
+once the spin group object has been created, the gamma matrix can be manually changed using the `update_gamma_matrix()` method. it will update the rest of the matrices and calculate new cross sections
+
+```python
+new_sg = deepcopy(sg)
+
+new_gamma_matrix = 0.5 * sg.gamma_matrix
+
+new_sg.update_gamma_matrix(new_gamma_matrix)
+```
