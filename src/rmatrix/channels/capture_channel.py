@@ -2,7 +2,7 @@ from rmatrix.channels.abstract_channel import AbstractChannel
 import numpy as np 
 
 class CaptureChannel(AbstractChannel):
-    def __init__(self,primary,product,J,pi,ell,ac,reduced_width_aplitudes,excitation):
+    def __init__(self,primary,product,J,pi,ell,ac,reduced_width_amplitudes,excitation):
         """ Class representing an elastic channel
         
         Parameters
@@ -25,12 +25,12 @@ class CaptureChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : list or numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : list or numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
 
         excitation : float
-            the excitiation energy of the product nucleus in eV
+            the excitation energy of the product nucleus in eV
 
 
         Attributes
@@ -56,12 +56,12 @@ class CaptureChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
 
         excitation : float
-            the excitiation energy of the product nucleus in eV
+            the excitation energy of the product nucleus in eV
 
         Sn : float
             the neutron separation energy of the product nucleus
@@ -85,7 +85,7 @@ class CaptureChannel(AbstractChannel):
             for the channel 
         
         """
-        super().__init__(primary,product,J,pi,ell,ac,reduced_width_aplitudes, excitation)
+        super().__init__(primary,product,J,pi,ell,ac,reduced_width_amplitudes, excitation)
         self.Sn = product.Sn
 
     def calc_k(self,incident_energies):
@@ -171,7 +171,7 @@ class CaptureChannel(AbstractChannel):
         """
         self.cross_section = 10**24 * np.pi/k_sq * np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out] 
         
-        # check that the imaginay component is basically zero before dropping it
+        # check that the imaginary component is basically zero before dropping it
         max_ind = np.argmax(self.cross_section.imag)
         assert self.cross_section[max_ind].imag / self.cross_section[max_ind].real < 1e-10
         self.cross_section = self.cross_section.real

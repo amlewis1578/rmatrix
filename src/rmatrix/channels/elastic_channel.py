@@ -3,7 +3,7 @@ import numpy as np
 import sys
 
 class ElasticChannel(AbstractChannel):
-    def __init__(self,neutron,target,J,pi,ell,ac,reduced_width_aplitudes):
+    def __init__(self,neutron,target,J,pi,ell,ac,m):
 
         """ Class representing an elastic channel
         
@@ -27,8 +27,8 @@ class ElasticChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : list or numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : list or numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
 
 
@@ -55,8 +55,8 @@ class ElasticChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : numpy array
-            Reduced width amplitues for the resonances in the 
+        m : numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
 
 
@@ -82,7 +82,7 @@ class ElasticChannel(AbstractChannel):
         if ell != 0:
             sys.exit("Only set up for s-wave neutrons right now")
 
-        super().__init__(neutron,target,J,pi,ell,ac,reduced_width_aplitudes)
+        super().__init__(neutron,target,J,pi,ell,ac,m)
 
     def calc_k(self,incident_energies):
         """ Function to calculate k for the channel 
@@ -167,7 +167,7 @@ class ElasticChannel(AbstractChannel):
         """
         self.cross_section = 10**24 * np.pi/k_sq * (1- 2*U_matrix[:,inc,out].real + np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out])
 
-        # check that the imaginay component is basically zero before dropping it
+        # check that the imaginary component is basically zero before dropping it
         max_ind = np.argmax(self.cross_section.imag / self.cross_section.real)
         assert self.cross_section[max_ind].imag / self.cross_section[max_ind].real < 1e-10
 
