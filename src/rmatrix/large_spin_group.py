@@ -3,6 +3,75 @@ import numpy as np
 
 class LargeSpinGroup:
     def __init__(self, res_energies, incident_channel, energy_grid, debug=False):
+        """Class to hold a single spin group when there are a large number of
+        channels.
+
+        Parameters
+        ----------
+        res_energies : list or numpy array
+            The resonances for this spin group, in eV
+
+        incident_channel : ElasticChannel obj
+            The incident channel
+
+        energy_grid : list or numpy array
+            The incident neutron energy grid to calculate the cross section on, in eV
+
+        debug : bool, optional, default is False
+            Debug mode prints out most of the matrices for the first incident energy
+
+
+        Attributes
+        ----------
+        res_energies : numpy array
+            The resonances for this spin group, in eV
+
+        incident_channel : ElasticChannel obj
+            The incident channel
+
+        energy_grid : numpy array
+            The incident neutron energy grid to calculate the cross section on, in eV
+
+        debug : bool
+            Debug mode prints out most of the matrices for the first incident energy
+
+        gamma_matrix : numpy array
+            The gamma matrix
+
+        P_matrix : numpy array
+            The P matrix
+
+        L_matrix : numpy array
+            The L matrix
+
+        L_inv : numpy array
+            The inverse of the L matrix
+
+        gLg : numpy array
+            The gamma L gamma matrix
+
+        A_inv : numpy array
+            The inverse of the A matrix
+
+        A_matrix : numpy array
+            The A matrix
+
+        Omega_matrix : numpy array
+            The phase shift matrix
+
+        U_matrix : numpy array
+            The U matrix
+
+        total_cross_section : numpy array
+            The total cross section for the spin group
+
+        Methods
+        -------
+        add_channel
+            Function to add a new channel to the spin group
+
+
+        """
         self.res_energies = np.array(res_energies)
         self.incident_channel = incident_channel
 
@@ -36,6 +105,18 @@ class LargeSpinGroup:
         self.energy_matrix = energy_matrix.astype(complex)
 
     def add_channel(self, channel):
+        """Function to add a new channel to the spin group
+
+        Arguments
+        ---------
+        channel : ElasticChannel or CaptureChannel object
+            The channel to add to the spin group
+
+        Returns
+        -------
+        None
+
+        """
         # add widths to gamma matrix
         self.gamma_matrix = np.hstack(
             (self.gamma_matrix, channel.reduced_width_amplitudes.reshape(self._Nl, 1))
@@ -68,6 +149,18 @@ class LargeSpinGroup:
         self._Nc += 1
 
     def calc_cross_section(self):
+        """Function to calculate the cross section
+
+        Arguments
+        ---------
+        None
+
+        Returns
+        -------
+        None
+
+        """
+
         # reshape the P matrix and Omega matrix
         self.P_matrix = np.moveaxis(self.P_matrix, -1, 0)
         self.Omega_matrix = np.moveaxis(self.Omega_matrix, -1, 0)
