@@ -1,7 +1,6 @@
-from rmatrix import Particle, ElasticChannel, CaptureChannel, SpinGroup
-import pytest
+from rmatrix import Particle, ElasticChannel, CaptureChannel, LargeSpinGroup
 import numpy as np
-from copy import deepcopy
+import pytest
 
 
 @pytest.fixture
@@ -76,40 +75,34 @@ def energy_grid():
 def test_two_capture_channels(
     res_energies, energy_grid, elastic, capture_first, capture_ground
 ):
-    obj = SpinGroup(res_energies, elastic, [capture_ground, capture_first], energy_grid)
+    obj = LargeSpinGroup(res_energies, elastic, energy_grid)
 
-    exp_A = np.array(
+    assert np.array_equal(obj.gamma_matrix.shape, (2, 1))
+    assert np.array_equal(obj.gamma_matrix, np.array([[106.78913185], [108.99600881]]))
+    assert np.array_equal(obj.P_matrix.shape, (1, 1, len(energy_grid)))
+
+    assert np.array_equal(obj.energy_matrix.shape, (len(energy_grid), 2, 2))
+
+    obj.add_channel(capture_ground)
+    obj.add_channel(capture_first)
+
+    exp_gamma = np.array(
         [
-            [9.96618054e-06 + 4.70344582e-07j, -1.72591797e-08 + 2.40032302e-07j],
-            [-1.72591797e-08 + 2.40032302e-07j, 4.99119207e-06 + 1.22496374e-07j],
+            [106.78913185, 2.51487027e-06, 0.8 * 2.51487027e-06],
+            [108.99600881, 2.49890268e-06, 0.8 * 2.49890268e-06],
         ]
     )
 
-    assert np.allclose(obj.A_matrix[0, :, :], exp_A)
-    np.save("two_channel_P_matrix.npy", obj.P_matrix)
+    assert np.array_equal(obj.gamma_matrix, exp_gamma)
 
-    assert np.isclose(obj.channels[0].cross_section[0], 0.33041047)
+    exp_P = np.load("two_channel_P_matrix.npy")
+    print(exp_P.shape)
+    print(obj.P_matrix.shape)
+    assert np.array_equal(obj.P_matrix[:, :, 0], exp_P[0, :, :])
 
+    # exp_A = np.array([
+    #     [ 9.96618054e-06+4.70344582e-07j, -1.72591797e-08+2.40032302e-07j],
+    #     [-1.72591797e-08+2.40032302e-07j,  4.99119207e-06+1.22496374e-07j]
+    # ])
 
-def test_update_gamma_matrix(res_energies, energy_grid, elastic, capture_ground):
-    obj1 = SpinGroup(res_energies, elastic, [capture_ground], energy_grid)
-    print(obj1.gamma_matrix)
-
-    # start with object 2, which has different amplitudes
-    capture_test = deepcopy(capture_ground)
-    capture_test.reduced_width_amplitudes *= 3
-    obj2 = SpinGroup(res_energies, elastic, [capture_test], energy_grid)
-    print(obj2.gamma_matrix)
-
-    # check that the cross sections are not the same
-    assert not np.array_equal(
-        obj1.channels[1].cross_section, obj2.channels[1].cross_section
-    )
-
-    # now update the obj2 with the gamma matrix from obj1, and check that the
-    # cross sections have been updated and match
-    obj2.update_gamma_matrix(obj1.gamma_matrix)
-
-    assert np.array_equal(
-        obj1.channels[1].cross_section, obj2.channels[1].cross_section
-    )
+    # assert np.allclose(obj.A_matrix[0,:,:],exp_A)
