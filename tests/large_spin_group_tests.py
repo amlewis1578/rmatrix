@@ -96,13 +96,16 @@ def test_two_capture_channels(
     assert np.array_equal(obj.gamma_matrix, exp_gamma)
 
     exp_P = np.load("two_channel_P_matrix.npy")
-    print(exp_P.shape)
-    print(obj.P_matrix.shape)
     assert np.array_equal(obj.P_matrix[:, :, 0], exp_P[0, :, :])
 
-    # exp_A = np.array([
-    #     [ 9.96618054e-06+4.70344582e-07j, -1.72591797e-08+2.40032302e-07j],
-    #     [-1.72591797e-08+2.40032302e-07j,  4.99119207e-06+1.22496374e-07j]
-    # ])
+    obj.calc_cross_section()
 
-    # assert np.allclose(obj.A_matrix[0,:,:],exp_A)
+    exp_A = np.array(
+        [
+            [9.96618054e-06 + 4.70344582e-07j, -1.72591797e-08 + 2.40032302e-07j],
+            [-1.72591797e-08 + 2.40032302e-07j, 4.99119207e-06 + 1.22496374e-07j],
+        ]
+    )
+
+    assert np.allclose(obj.A_matrix[0, :, :], exp_A)
+    assert np.isclose(0.3304104683519032, obj.total_cross_section[0])
