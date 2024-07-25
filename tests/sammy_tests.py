@@ -75,6 +75,6 @@ def test_partial_widths_capture(gamma,compound):
     penetrabilities = np.array([0.20489882, 0.20759486])
     capture_reduced_width_amplitudes = np.sqrt(capture_widths/(2*penetrabilities))
     
-    capture = CaptureChannel(gamma,compound,J,pi,ell,radius,partial_widths=capture_widths, resonance_energies=res_energies, excitation=6e6)
+    capture = CaptureChannel(gamma,compound,J,pi,ell,radius,partial_widths=capture_widths, resonance_energies=res_energies, excitation=0)
     
     assert np.allclose(capture.reduced_width_amplitudes, capture_reduced_width_amplitudes)

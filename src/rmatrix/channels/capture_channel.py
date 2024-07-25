@@ -128,12 +128,13 @@ class CaptureChannel(AbstractChannel):
             temp = excitation
             excitation = reduced_width_amplitudes
             reduced_width_amplitudes = temp
-            print(f'\treduced_width_amplitudes: {reduced_width_amplitudes}')
-            print(f'\texcitation: {excitation} eV')
+            print(f'\treduced_width_amplitudes: {excitation}')
+            print(f'\texcitation: {reduced_width_amplitudes} eV')
 
+        self.Sn = product.Sn
         super().__init__(primary,product,J,pi,ell,ac,reduced_width_amplitudes,
                          partial_widths, resonance_energies, excitation)
-        self.Sn = product.Sn
+        
 
     def calc_k(self,incident_energies):
         """ Function to calculate k for the channel 
