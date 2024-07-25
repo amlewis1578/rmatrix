@@ -79,9 +79,6 @@ class ElasticChannel(AbstractChannel):
             Reduced width amplitudes for the resonances in the 
             spin group
 
-        partial_widths : numpy array
-            Partial widths for the resonances
-
 
         Methods
         -------

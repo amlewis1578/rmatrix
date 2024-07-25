@@ -47,7 +47,7 @@ def test_bb_answers(neutron,gamma,target,compound,sammy_answers_bb):
 
     assert np.allclose(sg.channels[1].cross_section,sammy_answers_bb[:,3],atol=5e-6)
 
-def test_partial_widths(neutron,target):
+def test_partial_widths_elastic(neutron,target):
     res_energies = np.array([1e6,1.1e6])
 
     J = 0.5
@@ -61,3 +61,20 @@ def test_partial_widths(neutron,target):
     elastic = ElasticChannel(neutron,target,J,pi,ell,radius,partial_widths=elastic_widths, resonance_energies=res_energies)
 
     assert np.allclose(elastic.reduced_width_amplitudes, elastic_reduced_width_amplitudes)
+
+    
+def test_partial_widths_capture(gamma,compound):
+    res_energies = np.array([1e6,1.1e6])
+
+    J = 0.5
+    pi = 1  # positive parity
+    ell = 0  #  s-wave
+    radius = 0.532   # *10^(-12) cm 
+
+    capture_widths = np.array([1e3,1.1e3])/1e3   # widths from sammy in meV
+    penetrabilities = np.array([0.20489882, 0.20759486])
+    capture_reduced_width_amplitudes = np.sqrt(capture_widths/(2*penetrabilities))
+    
+    capture = CaptureChannel(gamma,compound,J,pi,ell,radius,partial_widths=capture_widths, resonance_energies=res_energies, excitation=6e6)
+    
+    assert np.allclose(capture.reduced_width_amplitudes, capture_reduced_width_amplitudes)

@@ -89,9 +89,6 @@ class AbstractChannel(ABC):
             Reduced width amplitudes for the resonances in the 
             spin group
 
-        partial_widths : numpy array
-            Partial widths for the resonances
-
 
         Methods
         -------
@@ -124,8 +121,10 @@ class AbstractChannel(ABC):
         if reduced_width_amplitudes is not None:
             self.reduced_width_amplitudes = np.array(reduced_width_amplitudes)
         elif partial_widths is not None and resonance_energies is not None:
+            
             print("**WARNING: Calculating the reduced width amplitudes from the partial widths.")
-            print("        The signs of the rwa's cannot be determined and all will be positive.\n ")
+            print("        The signs of the RWA's cannot be determined and all will be positive.\n ")
+            
             # use penetrabilities to calculate reduced width amplitudes
             self.reduced_width_amplitudes = np.sqrt(
                 partial_widths / (2 * self.calc_penetrability(resonance_energies))
