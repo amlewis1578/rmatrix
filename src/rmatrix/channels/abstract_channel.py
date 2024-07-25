@@ -3,8 +3,18 @@ import numpy as np
 
 class AbstractChannel(ABC):
 
-    def __init__(self,light_product,heavy_product,J,pi,ell,ac,reduced_width_aplitudes, excitation=0):
-        """ Abstract class representing a single channel
+    def __init__(self,light_product,heavy_product,J,pi,ell,ac,
+                 reduced_width_amplitudes=None, partial_widths = None,
+                  resonance_energies = None, excitation=0):
+        """ Abstract class representing a single channel. 
+
+        If reduced_width_amplitudes are not given, both partial_widths
+        and resonance_energies must be given so that the reduced width
+        amplitudes can be calculated. 
+
+        If both reduced_width_amplitudes and partial_widths are given,
+        reduced_width_amplitudes will be used and partial_widths will 
+        be ignored.
         
         Parameters
         ----------
@@ -27,9 +37,20 @@ class AbstractChannel(ABC):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : list or numpy array
-            Reduced width amplitues for the resonances in the 
-            spin group
+        reduced_width_amplitudes : list or numpy array, optional
+            Reduced width amplitudes for the resonances in the 
+            spin group. If not given, both partial_widths and
+            resonance_energies must be given.
+        
+        partial_widths : list or numpy array, optional
+            Partial widths for the resonances with penetrability calculated
+            at the energy of the resonance. If reduced_width_amplitudes is 
+            given, this will be ignored. If not, resonance_energies must also 
+            be given.
+
+        resonance_energies : list or numpy array, optional
+            List of resonance energies (in eV) used if partial_widths is 
+            given and reduced_width_amplitudes is not.
         
         excitation  : float, optional, default is 0
             The excitation  energy of the heavy nucleus after
@@ -64,8 +85,8 @@ class AbstractChannel(ABC):
             The excitation energy of the heavy nucleus after
             the reaction, in eV
 
-        reduced_width_aplitudes : numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
 
 
@@ -97,7 +118,21 @@ class AbstractChannel(ABC):
         self.ell = ell
         self.ac = ac
         self.excitation = excitation 
-        self.reduced_width_aplitudes = np.array(reduced_width_aplitudes)
+        if reduced_width_amplitudes is not None:
+            self.reduced_width_amplitudes = np.array(reduced_width_amplitudes)
+        elif partial_widths is not None and resonance_energies is not None:
+            
+            print("**WARNING: Calculating the reduced width amplitudes from the partial widths.")
+            print("        The signs of the RWA's cannot be determined and all will be positive.\n ")
+            
+            # use penetrabilities to calculate reduced width amplitudes
+            self.reduced_width_amplitudes = np.sqrt(
+                partial_widths / (2 * self.calc_penetrability(resonance_energies))
+            )
+
+        else:
+            raise TypeError("Need to provide either reduced_width_amplitudes or both partial_widths and resonance_energies.")
+            
 
     @abstractmethod
     def calc_k(self,incident_energies):
@@ -176,9 +211,6 @@ class AbstractChannel(ABC):
         """
         return None
         
-
-    def __repr__(self):
-        return f'{self._light_product} + {self._heavy_product}({self.excitation/1e6} MeV)'
     
     def __str__(self):
         return f'{self._light_product} + {self._heavy_product}({self.excitation/1e6} MeV)'

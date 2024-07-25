@@ -44,3 +44,5 @@ def test_exceptions(neutron, Ta181):
     neutron_widths = [106.78913185, 108.99600881]
     with pytest.raises(SystemExit):
         ElasticChannel(neutron,Ta181,1,1,1,a_c,neutron_widths)
+    with pytest.raises(TypeError):
+        ElasticChannel(neutron,Ta181,1,1,0,a_c,partial_widths=neutron_widths)

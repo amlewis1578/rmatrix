@@ -1,9 +1,20 @@
 from rmatrix.channels.abstract_channel import AbstractChannel
 import numpy as np 
+from warnings import warn
 
 class CaptureChannel(AbstractChannel):
-    def __init__(self,primary,product,J,pi,ell,ac,reduced_width_aplitudes,excitation):
-        """ Class representing an elastic channel
+    def __init__(self,primary,product,J,pi,ell,ac, excitation, 
+                 reduced_width_amplitudes=None, 
+                 partial_widths = None, resonance_energies = None):
+        """ Class representing a capture channel
+
+        If reduced_width_amplitudes are not given, both partial_widths
+        and resonance_energies must be given so that the reduced width
+        amplitudes can be calculated. 
+
+        If both reduced_width_amplitudes and partial_widths are given,
+        reduced_width_amplitudes will be used and partial_widths will 
+        be ignored.
         
         Parameters
         ----------
@@ -24,13 +35,25 @@ class CaptureChannel(AbstractChannel):
 
         ac : float
             The channel radius in 10^(-12) cm
-
-        reduced_width_aplitudes : list or numpy array
-            Reduced width amplitues for the resonances in the 
-            spin group
-
+            
         excitation : float
-            the excitiation energy of the product nucleus in eV
+            the excitation energy of the product nucleus in eV
+
+        reduced_width_amplitudes : list or numpy array, optional
+            Reduced width amplitudes for the resonances in the 
+            spin group. If not given, both partial_widths and
+            resonance_energies must be given.
+        
+        partial_widths : list or numpy array, optional
+            Partial widths for the resonances with penetrability calculated
+            at the energy of the resonance. If reduced_width_amplitudes is 
+            given, this will be ignored. If not, resonance_energies must also 
+            be given.
+
+        resonance_energies : list or numpy array, optional
+            List of resonance energies (in eV) used if partial_widths is 
+            given and reduced_width_amplitudes is not.
+
 
 
         Attributes
@@ -56,12 +79,12 @@ class CaptureChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
 
         excitation : float
-            the excitiation energy of the product nucleus in eV
+            the excitation energy of the product nucleus in eV
 
         Sn : float
             the neutron separation energy of the product nucleus
@@ -85,8 +108,35 @@ class CaptureChannel(AbstractChannel):
             for the channel 
         
         """
-        super().__init__(primary,product,J,pi,ell,ac,reduced_width_aplitudes, excitation)
+
+        # Because the call signature has changed but the major version of the code hasn't,
+        # there are some checks here to retain backward-compatibility
+        if type(excitation) == list or type(excitation) == np.ndarray:
+            warn('The call signature for CaptureChannel has changed.', DeprecationWarning,stacklevel=2)
+            print("**WARNING: the order of the parameters for CaptureChannel has changed.")
+            print("      The parameter reduced_width_amplitude is no longer required, so it has been moved ")
+            print("      after the required parameter excitation. The call signature is now: \n")
+            print("\tCaptureChannel(primary: Particle, product: Particle, J: float, pi: int, ell: int,")
+            print("\t               ac: float, excitation: float,")
+            print("\t           either:")
+            print("\t               (1) reduced_width_amplitudes: list or numpy array   OR ")
+            print("\t               (2) partial_widths: list or numpy array  AND ")
+            print("\t                   resonance_energies: list or numpy array")
+            print("\t               )\n")
+            print("    To maintain backwards compatibility, if excitation is a list or numpy array, it is assumed")
+            print("    that the old call signature was used and the parameters given are interchanged. Check that")
+            print("    these are correct before using this object:\n")
+
+            temp = excitation
+            excitation = reduced_width_amplitudes
+            reduced_width_amplitudes = temp
+            print(f'\treduced_width_amplitudes: {reduced_width_amplitudes}')
+            print(f'\texcitation: {excitation} eV')
+
         self.Sn = product.Sn
+        super().__init__(primary,product,J,pi,ell,ac,reduced_width_amplitudes,
+                         partial_widths, resonance_energies, excitation)
+        
 
     def calc_k(self,incident_energies):
         """ Function to calculate k for the channel 
@@ -171,7 +221,7 @@ class CaptureChannel(AbstractChannel):
         """
         self.cross_section = 10**24 * np.pi/k_sq * np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out] 
         
-        # check that the imaginay component is basically zero before dropping it
+        # check that the imaginary component is basically zero before dropping it
         max_ind = np.argmax(self.cross_section.imag)
         assert self.cross_section[max_ind].imag / self.cross_section[max_ind].real < 1e-10
         self.cross_section = self.cross_section.real
