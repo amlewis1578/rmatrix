@@ -128,8 +128,8 @@ class CaptureChannel(AbstractChannel):
             temp = excitation
             excitation = reduced_width_amplitudes
             reduced_width_amplitudes = temp
-            print(f'\treduced_width_amplitudes: {excitation}')
-            print(f'\texcitation: {reduced_width_amplitudes} eV')
+            print(f'\treduced_width_amplitudes: {reduced_width_amplitudes}')
+            print(f'\texcitation: {excitation} eV')
 
         self.Sn = product.Sn
         super().__init__(primary,product,J,pi,ell,ac,reduced_width_amplitudes,
