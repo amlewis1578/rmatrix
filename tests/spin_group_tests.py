@@ -23,7 +23,7 @@ def Ta182():
 @pytest.fixture
 def elastic(neutron,Ta181):
     J = 3
-    pi = 1  # positivie parity
+    pi = 1  # positive parity
     ell = 0  # only s-waves are implemented right now
     radius = 0.2   # *10^(-12) cm 
     reduced_width_amplitudes = [106.78913185, 108.99600881]
@@ -93,5 +93,3 @@ def test_update_gamma_matrix(res_energies, energy_grid, elastic,  capture_ground
     obj2.update_gamma_matrix(obj1.gamma_matrix)
 
     assert np.array_equal(obj1.channels[1].cross_section,obj2.channels[1].cross_section)
-
-

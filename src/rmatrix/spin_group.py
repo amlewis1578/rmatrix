@@ -91,7 +91,7 @@ class SpinGroup:
         if type(outgoing_channels) != list:
             outgoing_channels = [outgoing_channels]
 
-        # set up all channels, which is icident and all outgoing
+        # set up all channels, which is incident and all outgoing
         self.channels = [incident_channel] + outgoing_channels
 
         self.energy_grid = np.array(energy_grid)

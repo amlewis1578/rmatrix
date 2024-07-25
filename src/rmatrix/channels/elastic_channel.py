@@ -3,9 +3,18 @@ import numpy as np
 import sys
 
 class ElasticChannel(AbstractChannel):
-    def __init__(self,neutron,target,J,pi,ell,ac,reduced_width_aplitudes):
+    def __init__(self,neutron,target,J,pi,ell,ac, reduced_width_amplitudes=None, 
+                 partial_widths = None, resonance_energies = None):
 
         """ Class representing an elastic channel
+
+        If reduced_width_amplitudes are not given, both partial_widths
+        and resonance_energies must be given so that the reduced width
+        amplitudes can be calculated. 
+
+        If both reduced_width_amplitudes and partial_widths are given,
+        reduced_width_amplitudes will be used and partial_widths will 
+        be ignored.
         
         Parameters
         ----------
@@ -27,9 +36,20 @@ class ElasticChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : list or numpy array
-            Reduced width amplitues for the resonances in the 
-            spin group
+        reduced_width_amplitudes : list or numpy array, optional
+            Reduced width amplitudes for the resonances in the 
+            spin group. If not given, both partial_widths and
+            resonance_energies must be given.
+        
+        partial_widths : list or numpy array, optional
+            Partial widths for the resonances with penetrability calculated
+            at the energy of the resonance. If reduced_width_amplitudes is 
+            given, this will be ignored. If not, resonance_energies must also 
+            be given.
+
+        resonance_energies : list or numpy array, optional
+            List of resonance energies (in eV) used if partial_widths is 
+            given and reduced_width_amplitudes is not.
 
 
         Attributes
@@ -55,9 +75,12 @@ class ElasticChannel(AbstractChannel):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
+
+        partial_widths : numpy array
+            Partial widths for the resonances
 
 
         Methods
@@ -82,7 +105,8 @@ class ElasticChannel(AbstractChannel):
         if ell != 0:
             sys.exit("Only set up for s-wave neutrons right now")
 
-        super().__init__(neutron,target,J,pi,ell,ac,reduced_width_aplitudes)
+        super().__init__(neutron,target,J,pi,ell,ac, reduced_width_amplitudes, 
+                         partial_widths, resonance_energies)
 
     def calc_k(self,incident_energies):
         """ Function to calculate k for the channel 
@@ -167,7 +191,7 @@ class ElasticChannel(AbstractChannel):
         """
         self.cross_section = 10**24 * np.pi/k_sq * (1- 2*U_matrix[:,inc,out].real + np.conjugate(U_matrix[:,inc,out])*U_matrix[:,inc,out])
 
-        # check that the imaginay component is basically zero before dropping it
+        # check that the imaginary component is basically zero before dropping it
         max_ind = np.argmax(self.cross_section.imag / self.cross_section.real)
         assert self.cross_section[max_ind].imag / self.cross_section[max_ind].real < 1e-10
 

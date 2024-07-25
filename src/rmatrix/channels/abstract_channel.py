@@ -4,11 +4,17 @@ import numpy as np
 class AbstractChannel(ABC):
 
     def __init__(self,light_product,heavy_product,J,pi,ell,ac,
-                 reduced_width_amplitudes=None, partial_widths = None, excitation=0):
+                 reduced_width_amplitudes=None, partial_widths = None,
+                  resonance_energies = None, excitation=0):
         """ Abstract class representing a single channel. 
 
-        reduced_width_amplitudes or partial_widths must be given. If both are given,
-        reduced_width_amplitudes will be used and partial_widths will be ignored.
+        If reduced_width_amplitudes are not given, both partial_widths
+        and resonance_energies must be given so that the reduced width
+        amplitudes can be calculated. 
+
+        If both reduced_width_amplitudes and partial_widths are given,
+        reduced_width_amplitudes will be used and partial_widths will 
+        be ignored.
         
         Parameters
         ----------
@@ -33,10 +39,18 @@ class AbstractChannel(ABC):
 
         reduced_width_amplitudes : list or numpy array, optional
             Reduced width amplitudes for the resonances in the 
-            spin group
+            spin group. If not given, both partial_widths and
+            resonance_energies must be given.
         
         partial_widths : list or numpy array, optional
-            Partial widths for the resonances
+            Partial widths for the resonances with penetrability calculated
+            at the energy of the resonance. If reduced_width_amplitudes is 
+            given, this will be ignored. If not, resonance_energies must also 
+            be given.
+
+        resonance_energies : list or numpy array, optional
+            List of resonance energies (in eV) used if partial_widths is 
+            given and reduced_width_amplitudes is not.
         
         excitation  : float, optional, default is 0
             The excitation  energy of the heavy nucleus after
@@ -109,10 +123,16 @@ class AbstractChannel(ABC):
         self.excitation = excitation 
         if reduced_width_amplitudes is not None:
             self.reduced_width_amplitudes = np.array(reduced_width_amplitudes)
-        elif partial_widths is not None:
-            pass
+        elif partial_widths is not None and resonance_energies is not None:
+            print("**WARNING: Calculating the reduced width amplitudes from the partial widths.")
+            print("        The signs of the rwa's cannot be determined and all will be positive.\n ")
+            # use penetrabilities to calculate reduced width amplitudes
+            self.reduced_width_amplitudes = np.sqrt(
+                partial_widths / (2 * self.calc_penetrability(resonance_energies))
+            )
+
         else:
-            raise TypeError(f"Need to provide either reduced_width_amplitudes or partial_widths.")
+            raise TypeError("Need to provide either reduced_width_amplitudes or both partial_widths and resonance_energies.")
             
 
     @abstractmethod
