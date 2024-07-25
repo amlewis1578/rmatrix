@@ -35,8 +35,8 @@ def test_bb_answers(neutron,gamma,target,compound,sammy_answers_bb):
 
     elastic_widths = np.array([1e7,1.1e7])/1e3   # widths from sammy in meV
     penetrabilities = np.array([1.11567655, 1.17013143])
-    elastic_reduced_width_aplitudes = np.sqrt(elastic_widths/(2*penetrabilities))
-    elastic = ElasticChannel(neutron,target,J,pi,ell,radius,elastic_reduced_width_aplitudes)
+    elastic_reduced_width_amplitudes = np.sqrt(elastic_widths/(2*penetrabilities))
+    elastic = ElasticChannel(neutron,target,J,pi,ell,radius,elastic_reduced_width_amplitudes)
 
     capture_widths = np.array([1e3,1.1e3])/1e3   # widths from sammy in meV
     penetrabilities = np.array([0.20489882, 0.20759486])

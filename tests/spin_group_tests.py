@@ -26,9 +26,9 @@ def elastic(neutron,Ta181):
     pi = 1  # positivie parity
     ell = 0  # only s-waves are implemented right now
     radius = 0.2   # *10^(-12) cm 
-    reduced_width_aplitudes = [106.78913185, 108.99600881]
+    reduced_width_amplitudes = [106.78913185, 108.99600881]
 
-    return ElasticChannel(neutron, Ta181,J,pi,ell,radius,reduced_width_aplitudes)
+    return ElasticChannel(neutron, Ta181,J,pi,ell,radius,reduced_width_amplitudes)
 
 @pytest.fixture
 def capture_ground(gamma,Ta182):
@@ -36,10 +36,10 @@ def capture_ground(gamma,Ta182):
     pi = 1 
     ell = 1 
     radius = 0.2   
-    reduced_width_aplitudes = [2.51487027e-06, 2.49890268e-06]
+    reduced_width_amplitudes = [2.51487027e-06, 2.49890268e-06]
     excitation = 0  
 
-    return CaptureChannel(gamma,Ta182,J,pi,ell,radius,reduced_width_aplitudes, excitation)
+    return CaptureChannel(gamma,Ta182,J,pi,ell,radius,reduced_width_amplitudes, excitation)
 
 
 @pytest.fixture
@@ -48,10 +48,10 @@ def capture_first(gamma,Ta182):
     pi = 1  
     ell = 1 
     radius = 0.2   
-    reduced_width_aplitudes = 0.8*np.array([2.51487027e-06, 2.49890268e-06])
+    reduced_width_amplitudes = 0.8*np.array([2.51487027e-06, 2.49890268e-06])
     excitation = 5e5 
 
-    return CaptureChannel(gamma,Ta182,J,pi,ell,radius,reduced_width_aplitudes, excitation)
+    return CaptureChannel(gamma,Ta182,J,pi,ell,radius,reduced_width_amplitudes, excitation)
 
 @pytest.fixture
 def res_energies():
@@ -81,7 +81,7 @@ def test_update_gamma_matrix(res_energies, energy_grid, elastic,  capture_ground
 
     # start with object 2, which has different amplitudes
     capture_test = deepcopy(capture_ground)
-    capture_test.reduced_width_aplitudes *=3
+    capture_test.reduced_width_amplitudes *=3
     obj2 = SpinGroup(res_energies, elastic, [capture_test],energy_grid)
     print(obj2.gamma_matrix)
 

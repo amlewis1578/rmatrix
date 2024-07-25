@@ -121,7 +121,7 @@ class SpinGroup:
         """
         self.gamma_matrix = np.zeros((self._Nl, self._Nc))
         for i, channel in enumerate(self.channels):
-            self.gamma_matrix[:,i] = channel.reduced_width_aplitudes
+            self.gamma_matrix[:,i] = channel.reduced_width_amplitudes
         if debug: print("\n\ngamma: ", self.gamma_matrix.shape, "\n", self.gamma_matrix)
 
     def set_up_L_matrix(self, debug=False):

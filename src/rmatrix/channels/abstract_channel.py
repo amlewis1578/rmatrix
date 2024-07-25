@@ -3,8 +3,12 @@ import numpy as np
 
 class AbstractChannel(ABC):
 
-    def __init__(self,light_product,heavy_product,J,pi,ell,ac,reduced_width_aplitudes, excitation=0):
-        """ Abstract class representing a single channel
+    def __init__(self,light_product,heavy_product,J,pi,ell,ac,
+                 reduced_width_amplitudes=None, partial_widths = None, excitation=0):
+        """ Abstract class representing a single channel. 
+
+        reduced_width_amplitudes or partial_widths must be given. If both are given,
+        reduced_width_amplitudes will be used and partial_widths will be ignored.
         
         Parameters
         ----------
@@ -27,9 +31,12 @@ class AbstractChannel(ABC):
         ac : float
             The channel radius in 10^(-12) cm
 
-        reduced_width_aplitudes : list or numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : list or numpy array, optional
+            Reduced width amplitudes for the resonances in the 
             spin group
+        
+        partial_widths : list or numpy array, optional
+            Partial widths for the resonances
         
         excitation  : float, optional, default is 0
             The excitation  energy of the heavy nucleus after
@@ -64,9 +71,12 @@ class AbstractChannel(ABC):
             The excitation energy of the heavy nucleus after
             the reaction, in eV
 
-        reduced_width_aplitudes : numpy array
-            Reduced width amplitues for the resonances in the 
+        reduced_width_amplitudes : numpy array
+            Reduced width amplitudes for the resonances in the 
             spin group
+
+        partial_widths : numpy array
+            Partial widths for the resonances
 
 
         Methods
@@ -97,7 +107,13 @@ class AbstractChannel(ABC):
         self.ell = ell
         self.ac = ac
         self.excitation = excitation 
-        self.reduced_width_aplitudes = np.array(reduced_width_aplitudes)
+        if reduced_width_amplitudes is not None:
+            self.reduced_width_amplitudes = np.array(reduced_width_amplitudes)
+        elif partial_widths is not None:
+            pass
+        else:
+            raise TypeError(f"Need to provide either reduced_width_amplitudes or partial_widths.")
+            
 
     @abstractmethod
     def calc_k(self,incident_energies):
