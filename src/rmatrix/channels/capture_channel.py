@@ -1,5 +1,6 @@
 from rmatrix.channels.abstract_channel import AbstractChannel
 import numpy as np 
+from warnings import warn
 
 class CaptureChannel(AbstractChannel):
     def __init__(self,primary,product,J,pi,ell,ac, excitation, 
@@ -111,6 +112,7 @@ class CaptureChannel(AbstractChannel):
         # Because the call signature has changed but the major version of the code hasn't,
         # there are some checks here to retain backward-compatibility
         if type(excitation) == list or type(excitation) == np.ndarray:
+            warn('The call signature for CaptureChannel has changed.', DeprecationWarning,stacklevel=2)
             print("**WARNING: the order of the parameters for CaptureChannel has changed.")
             print("      The parameter reduced_width_amplitude is no longer required, so it has been moved ")
             print("      after the required parameter excitation. The call signature is now: \n")
