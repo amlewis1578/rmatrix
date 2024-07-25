@@ -1,6 +1,7 @@
 from rmatrix import Particle, ElasticChannel, CaptureChannel, SpinGroup
 import pytest
 import numpy as np
+import pytest
 from copy import deepcopy
 
 
@@ -61,6 +62,10 @@ def res_energies():
 def energy_grid():
     return np.linspace(0.9e6,1.2e6,1001)
 
+def test_one_capture_channel(res_energies, energy_grid, elastic, capture_ground):
+    obj = SpinGroup(res_energies, elastic, capture_ground,energy_grid)
+    assert len(obj.channels) == 2
+
 def test_two_capture_channels(res_energies, energy_grid, elastic, capture_first, capture_ground):
     obj = SpinGroup(res_energies, elastic, [capture_ground,capture_first],energy_grid)
 
@@ -93,3 +98,9 @@ def test_update_gamma_matrix(res_energies, energy_grid, elastic,  capture_ground
     obj2.update_gamma_matrix(obj1.gamma_matrix)
 
     assert np.array_equal(obj1.channels[1].cross_section,obj2.channels[1].cross_section)
+
+    # check wrong shape
+    original = deepcopy(obj1.gamma_matrix)
+    obj1.update_gamma_matrix(np.zeros((100,100)))
+    assert np.array_equal(obj1.gamma_matrix , original)
+
